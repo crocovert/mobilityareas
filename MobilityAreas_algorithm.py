@@ -54,6 +54,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterNumber('Maxaggregationsize', self.tr('Max aggregation size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=50000))
         self.addParameter(QgsProcessingParameterNumber('Maximumlink', self.tr('Maximum link'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1, defaultValue=0.01))
         self.addParameter(QgsProcessingParameterBoolean('Neighbourhood', self.tr('Neighbourhood constraint'), defaultValue=False))
+        self.addParameter(QgsProcessingParameterBoolean('Secondary', self.tr('Secondary poles'), defaultValue=False))
         self.addParameter(QgsProcessingParameterFeatureSink('Output', self.tr('Output'), type=QgsProcessing.TypeVectorPolygon, defaultValue=None))
 
     def processAlgorithm(self, parameters, context, model_feedback):
@@ -72,6 +73,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         max_size=self.parameterAsDouble(parameters,'Maxaggregationsize',context)
         max_link=self.parameterAsDouble(parameters,'Maximumlink',context)
         continu=self.parameterAsBool(parameters,'Neighbourhood',context)
+        secondaire=self.parameterAsBool(parameters,'Secondary',context)
         separateur=self.parameterAsString(parameters,'Separator',context)
         
         fields = QgsFields()
@@ -153,27 +155,34 @@ class MobilityAreas(QgsProcessingAlgorithm):
                 bassins[pole]=set([pole])
             bassins[pole]=bassins[pole].union(bassins[commune])
             bassins[commune].clear()
-            a=self.maj_pole(a,commune, pole,origine,destination)
+            a=self.maj_pole(a,commune, pole,origine,destination,secondaire)
             voisinage=self.maj_voisin_pole(a,commune, pole,origine,destination)
             a=self.maj_migrations(a,origine,destination,valeur)
             a,marges,marged=self.calcul_marges_interne(a, origine, destination, valeur)
             a=self.maj_voisinage(a,voisinage,continu, origine, destination)
             pct=marges.loc[marges[origine]==pole,['PCT']]
+            if len(pct)>0:
+                pct_value=pct.iat[0,0]
+            else:
+                pct_value=0
             total=marged.loc[marged[destination]==pole,['TOTAL_POLE']]
             if pole not in dic_geo:
                 try:
-                    dic_geo[pole]=[pole,pole,dic_geo[commune][2],QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2021,1,1,0,0).addSecs(n),lmax['LIEN'],pct.iat[0,0],total.iat[0,0]]
+                    dic_geo[pole]=[pole,pole,dic_geo[commune][2],QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2021,1,1,0,0).addSecs(n),lmax['LIEN'],pct_value,total.iat[0,0]]
                 except:
+                    dic_geo[pole]=[pole,pole,dic_geo[commune][2],QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2021,1,1,0,0).addSecs(n),lmax['LIEN'],0,total.iat[0,0]]
                     print(pole)
-                    print(dic_geo)
-            resultat.write(";".join([str(i) for i in [n,commune,pole,lmax['LIEN'],pct.iat[0,0],total.iat[0,0],'\n']]))
-
+                    print(pct)
+            try:
+                resultat.write(";".join([str(i) for i in [n,commune,pole,lmax['LIEN'],pct_value,total.iat[0,0],'\n']]))
+            except:
+                resultat.write(";".join([str(i) for i in [n,commune,pole,lmax['LIEN'],0,total.iat[0,0],'\n']]))
             
             feat=QgsFeature()
             if commune not in poles:
-                feat.setAttributes([n,str(commune),str(pole),"",dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct.iat[0,0]),float(total.iat[0,0]),float(lmax['FLUX'])])
+                feat.setAttributes([n,str(commune),str(pole),"",dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
             else:
-                feat.setAttributes([n,str(commune),str(pole),str(dic_geo[commune][1]),dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct.iat[0,0]),float(total.iat[0,0]),float(lmax['FLUX'])])
+                feat.setAttributes([n,str(commune),str(pole),str(dic_geo[commune][1]),dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
                 
             feat.setGeometry(dic_geo[commune][2])
             #print(";".join([str(i) for i in [n,str(commune),str(pole),dic_geo[commune][2],dic_geo[commune][2].addSecs(n),lmax['LIEN'],pct.iat[0,0],total.iat[0,0]]]))
@@ -182,11 +191,11 @@ class MobilityAreas(QgsProcessingAlgorithm):
 
             feat2=QgsFeature()
             if pole not in poles:
-                feat2.setAttributes([n,str(pole),str(pole),'',dic_geo[pole][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct.iat[0,0]),float(total.iat[0,0]),float(lmax['FLUX'])])
+                feat2.setAttributes([n,str(pole),str(pole),'',dic_geo[pole][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
                 poles.add(pole)
                 feedback.setProgressText(str(pole)+":" +dic_geo[pole][1])
             else:
-                feat2.setAttributes([n,str(pole),str(pole),str(dic_geo[pole][1]),dic_geo[pole][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct.iat[0,0]),float(total.iat[0,0]),float(lmax['FLUX'])])
+                feat2.setAttributes([n,str(pole),str(pole),str(dic_geo[pole][1]),dic_geo[pole][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
 
             feat2.setGeometry(dic_geo[pole][2])
             #print(";".join([str(i) for i in [n,str(commune),str(pole),dic_geo[pole][2],QDateTime(2021,1,1,0,0).addSecs(n),lmax['LIEN'],pct.iat[0,0],total.iat[0,0]]] ))
@@ -201,7 +210,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
                 break
 
             #feat3=QgsFeature()
-            dic_geo[pole]=[pole,name,geom,QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct.iat[0,0]),float(total.iat[0,0]),float(lmax['FLUX'])]
+            dic_geo[pole]=[pole,name,geom,QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])]
             #feat3.setGeometry(geom)
 
             #feat3.setAttributes([n,str(commune),str(pole),name,QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2021,1,1,0,0),float(lmax['LIEN']),float(pct.iat[0,0]),float(total.iat[0,0])])
@@ -322,9 +331,13 @@ class MobilityAreas(QgsProcessingAlgorithm):
         return(a)
 
 
-    def maj_pole(self, data,commune,pole,origine,destination):
-        data.loc[(data[origine]==commune) ,origine]=pole
-        data.loc[(data[destination]==commune) ,destination]=pole
+    def maj_pole(self, data,commune,pole,origine,destination,secondaire=False):
+        if secondaire==False:
+            data.loc[(data[origine]==commune) ,origine]=pole
+            data.loc[(data[destination]==commune) ,destination]=pole
+        else:
+            texte='not('+str(origine)+"=='"+str(commune)+"' or "+str(destination) +"=='"+ str(commune)+"')"
+            data=data.query(texte)
         data.loc[(data[origine]==pole) ,'POLE']=1
         
         return(data)
@@ -474,6 +487,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
             Max agregation size: The maximum size to be able to be agregated
             Maximum link: A stop criteria on the maximum link (0.01 = 1% of the trips are going to the pole area)
             Neighbourhood constraint: if true a zone can be agregated only if it intersects the pole area (that implies no island in pole areas)
+            Secondary poles: If checkes, secondary poles, that could be masqued by main poles, may appear
             Ouput: The polygon layer result table (contains resultst from each step of the algorithm for further dynamic analysis with temporal manager)
             
         """)

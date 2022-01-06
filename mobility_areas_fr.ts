@@ -59,33 +59,33 @@
         <translation>Lien maximum pour agrégation</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="57"/>
+        <location filename="MobilityAreas_algorithm.py" line="58"/>
         <source>Output</source>
         <translation>Résultat</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="97"/>
+        <location filename="MobilityAreas_algorithm.py" line="99"/>
         <source>step;zone;pole;link;internal;total
 </source>
         <translation>etape;zone;pole;lien;interne;total</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="104"/>
+        <location filename="MobilityAreas_algorithm.py" line="106"/>
         <source>Generating neighbourhood table...</source>
         <translation>Génération de la table de voisinage...</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="108"/>
+        <location filename="MobilityAreas_algorithm.py" line="110"/>
         <source>Generating zones data...</source>
         <translation>Génération des données de zones...</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="117"/>
+        <location filename="MobilityAreas_algorithm.py" line="119"/>
         <source>Importing data...</source>
         <translation>Import des données...</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="144"/>
+        <location filename="MobilityAreas_algorithm.py" line="146"/>
         <source>Building cluster areas...</source>
         <translation>Elaboration des bassins de mobilité...</translation>
     </message>
@@ -144,7 +144,7 @@
         </translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="431"/>
+        <location filename="MobilityAreas_algorithm.py" line="444"/>
         <source>Mobility Areas</source>
         <translation>Bassins de mobilité</translation>
     </message>
@@ -154,7 +154,7 @@
         <translation>Contrainte de voisinage</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="454"/>
+        <location filename="MobilityAreas_algorithm.py" line="467"/>
         <source>
         Algorithm to build incrementally mobility cluster areas based on OD trips data between zones. 
         It aggregates successively zones that have the strongest link until it remains only one area
@@ -178,10 +178,11 @@
             Max agregation size: The maximum size to be able to be agregated
             Maximum link: A stop criteria on the maximum link (0.01 = 1% of the trips are going to the pole area)
             Neighbourhood constraint: if true a zone can be agregated only if it intersects the pole area (that implies no island in pole areas)
+            Secondary poles: If checkes, secondary poles, that could be masqued by main poles, may appear
             Ouput: The polygon layer result table (contains resultst from each step of the algorithm for further dynamic analysis with temporal manager)
             
         </source>
-        <translation type="unfinished">        Algorithme pour construirer de manière itérative des bassins de mobilité à partir de données origine/destination entre zones
+        <translation>        Algorithme pour construirer de manière itérative des bassins de mobilité à partir de données origine/destination entre zones
         Il agrège de manière itérative les zones qui ont la plus frte dépendance entre elles jusqu&apos;à ce qu&apos;il ne reste plus de zones à agréger
         Le résultat est une couches de polygones qui représentent les zones et bassins de mobilité  agrégés tout au long du processus
         avec comme données associées les heure de création et de supprression de chaque objets permettant de faire de cartes animées  en fonction de sdifférentes étapes
@@ -204,10 +205,16 @@
             Minimum pole size : the minimum size for becoming a pole
             Taille maximale d&apos;agrégation: Taille maximale au delà de laquelle la zone ne pourra pas être agrégée
             Lien maximum: Un des critères d&apos;arrêt de l&apos;aortihme. Lien maximal en dessous duquel la zone ne peut être agrégée au pôle
-............Contrainte de voisinage: Si coché, la zone ne peut être agrgée au pôle que si elle l&apos;intersecte
+............Contrainte de voisinage: Si coché, la zone ne peut être agregée au pôle que si elle l&apos;intersecte
+............Pôles econdaires: Si coché, des pôles econdaires masqués par l&apos;attractiivité des pôles principaux peuvent apparaître
             Résultat: La table de polygones résultat (contient les résultats de chaque étape de l&apos;algorithme pour une analyse future avec la manageur temporel de QGis)
             
         </translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="57"/>
+        <source>Secondary poles</source>
+        <translation>Pôles secondaires</translation>
     </message>
 </context>
 <context>
