@@ -1,3 +1,3 @@
-SOURCES= MobilityAreas.py MobilityAreas_algorithm.py MobilityAreas_provider.py 
-TRANSLATIONS=mobiity_areas_en.ts mobiity_areas_fr.ts 
+SOURCES= MobilityAreas_algorithm.py MobilityAreas_provider.py MobilityAreas.py 
+TRANSLATIONS=mobility_areas_en.ts mobility_areas_fr.ts 
 CODECFORSRC     = UTF-8

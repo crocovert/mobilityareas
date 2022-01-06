@@ -10,6 +10,7 @@ from qgis.core import QgsProcessing
 from qgis.core import QgsProcessingAlgorithm
 from qgis.core import QgsProcessingMultiStepFeedback
 from qgis.core import QgsProcessingParameterVectorLayer
+from qgis.core import QgsProcessingParameterBoolean
 from qgis.core import QgsProcessingParameterField
 from qgis.core import QgsProcessingParameterExpression
 from qgis.core import QgsProcessingParameterFile
@@ -52,6 +53,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterNumber('Minimumpoolsize', self.tr('Minimum pole size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=2500))
         self.addParameter(QgsProcessingParameterNumber('Maxaggregationsize', self.tr('Max aggregation size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=50000))
         self.addParameter(QgsProcessingParameterNumber('Maximumlink', self.tr('Maximum link'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1, defaultValue=0.01))
+        self.addParameter(QgsProcessingParameterBoolean('Neighbourhood', self.tr('Neighbourhood constraint'), defaultValue=False))
         self.addParameter(QgsProcessingParameterFeatureSink('Output', self.tr('Output'), type=QgsProcessing.TypeVectorPolygon, defaultValue=None))
 
     def processAlgorithm(self, parameters, context, model_feedback):
@@ -69,6 +71,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         min_size=self.parameterAsDouble(parameters,'Minimumpoolsize',context)
         max_size=self.parameterAsDouble(parameters,'Maxaggregationsize',context)
         max_link=self.parameterAsDouble(parameters,'Maximumlink',context)
+        continu=self.parameterAsBool(parameters,'Neighbourhood',context)
         separateur=self.parameterAsString(parameters,'Separator',context)
         
         fields = QgsFields()
@@ -97,7 +100,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         pole_min=min_size
         pole_max=max_size
         lien_mini=max_link
-        continu=False
+        #continu=False
         feedback.setProgressText(self.tr("Generating neighbourhood table..."))
         feedback.setCurrentStep(1)
         voisinage=self.cree_voisinage(zones,zone_id,10.0, continu,origine,destination,nom_txt[0]+"_voisinage.txt")
@@ -470,6 +473,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
             Minimum pole size : the minimum size for becoming a pole
             Max agregation size: The maximum size to be able to be agregated
             Maximum link: A stop criteria on the maximum link (0.01 = 1% of the trips are going to the pole area)
+            Neighbourhood constraint: if true a zone can be agregated only if it intersects the pole area (that implies no island in pole areas)
             Ouput: The polygon layer result table (contains resultst from each step of the algorithm for further dynamic analysis with temporal manager)
             
         """)
