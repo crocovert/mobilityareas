@@ -50,6 +50,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterExpression('Destination', self.tr('Destination'), parentLayerParameterName='', defaultValue=''))
         self.addParameter(QgsProcessingParameterExpression('Value', self.tr('Value'), parentLayerParameterName='', defaultValue=''))
         self.addParameter(QgsProcessingParameterString('Separator', self.tr('Field separator'),defaultValue=';'))
+        self.addParameter(QgsProcessingParameterString('Filter', self.tr('Filter'),defaultValue='',optional=True))
         self.addParameter(QgsProcessingParameterNumber('Minimumpoolsize', self.tr('Minimum pole size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=2500))
         self.addParameter(QgsProcessingParameterNumber('Maxaggregationsize', self.tr('Max aggregation size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=50000))
         self.addParameter(QgsProcessingParameterNumber('Maximumlink', self.tr('Maximum link'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1, defaultValue=0.01))
@@ -75,6 +76,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         continu=self.parameterAsBool(parameters,'Neighbourhood',context)
         secondaire=self.parameterAsBool(parameters,'Secondary',context)
         separateur=self.parameterAsString(parameters,'Separator',context)
+        filtre=self.parameterAsString(parameters,'Filter',context)
         
         fields = QgsFields()
         fields.append(QgsField("etape", QVariant.Int))
@@ -119,7 +121,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         feedback.setProgressText(self.tr("Importing data..."))
         feedback.setCurrentStep(3)
 
-        a=self.import_migrations(donnees,origine,destination,separateur)
+        a=self.import_migrations(donnees,origine,destination,valeur,separateur,str(filtre))
         #a=filtre_migrations(a,['09','11','12','30','31','32','34','46','48','65','66','81','82'])
         #a=filtre_migrations(a,['02','59','60','62','80'])
         #a=filtre_migrations(a,['08','10','51','52','54','55','57','67','68','88'])
@@ -130,7 +132,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
 
 
 
-
+        print(a.head())
         a,marges,marged=self.calcul_marges_interne(a,origine,destination, valeur)
 
 
@@ -245,8 +247,11 @@ class MobilityAreas(QgsProcessingAlgorithm):
         
         return {'output': dest_id}
         
-    def import_migrations(self, input='G:/insee/RP2017_MOBPRO/FD_MOBPRO_2017.csv',o='COMMUNE',d='DCLT',separateur=';'):
-        a=pandas.read_csv(input,';',delimiter=separateur, dtype={'COMMUNE':str,'DCFLT':str, 'DCLT': str}, decimal='.')
+    def import_migrations(self, input='G:/insee/RP2017_MOBPRO/FD_MOBPRO_2017.csv',o='COMMUNE',d='DCLT',valeur='IPONDI',separateur=';',filtre=''):
+        a=pandas.read_csv(input,';',delimiter=separateur, dtype={o:str, d: str}, decimal='.')
+        if not(filtre==''):
+            a=a.query(filtre)
+        
         return(a)
 
 
@@ -302,7 +307,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
     def calcul_marges_interne(self,data,origine,destination,value):
 
         data=data.assign(INT=((data[origine]==data[destination])*data[value]*1.0))
-        marges=data.groupby([origine],as_index=False).agg({'INT': np.sum,value: np.sum}).rename(columns={'INT':'INTERNE','IPONDI': 'TOTAL'})
+        marges=data.groupby([origine],as_index=False).agg({'INT': np.sum,value: np.sum}).rename(columns={'INT':'INTERNE',value: 'TOTAL'})
         marged=data.groupby([destination],as_index=False).agg({value: np.sum}).rename(columns={value: 'TOTAL_POLE'})
         marges=marges.assign(PCT=marges['INTERNE']/marges['TOTAL'])
         return([data,marges,marged])
@@ -483,6 +488,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
             Destination: name of the destination column
             Value: Name of the value column
             Field separator: Field separator . ';' by default
+            Filter: OD trips data filter in pandas syntax
             Minimum pole size : the minimum size for becoming a pole
             Max agregation size: The maximum size to be able to be agregated
             Maximum link: A stop criteria on the maximum link (0.01 = 1% of the trips are going to the pole area)
