@@ -136,6 +136,8 @@ class MobilityAreas(QgsProcessingAlgorithm):
 
         print(a.head())
         a,marges,marged=self.calcul_marges_interne(a,origine,destination, valeur)
+        a=self.maj_migrations(a,origine,destination,valeur)
+
 
 
 
@@ -260,7 +262,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         a=pandas.read_csv(input,';',delimiter=separateur, dtype={o:str, d: str}, decimal=dec)
         if not(filtre==''):
             a=a.query(filtre)
-        
+        a=a.assign(POLE=0)
         return(a)
 
 
@@ -340,6 +342,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
             texte="(TOTAL_POLE>=" + str(pole_min) +" and TOTAL<=" + str(pole_max)+") and (LIEN>="+str(lien_mini)+" and TOUCHE==1)"
             lien_max=data.query(texte)['LIEN'].idxmax()
             a=data.loc[lien_max]
+            print(a)
         except:
             a=pandas.DataFrame({})
         return(a)
