@@ -50,6 +50,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterExpression('Destination', self.tr('Destination'), parentLayerParameterName='', defaultValue=''))
         self.addParameter(QgsProcessingParameterExpression('Value', self.tr('Value'), parentLayerParameterName='', defaultValue=''))
         self.addParameter(QgsProcessingParameterString('Separator', self.tr('Field separator'),defaultValue=';'))
+        self.addParameter(QgsProcessingParameterString('Dec', self.tr('Decimal separator'),defaultValue='.'))
         self.addParameter(QgsProcessingParameterString('Filter', self.tr('Filter'),defaultValue='',optional=True))
         self.addParameter(QgsProcessingParameterNumber('Minimumpoolsize', self.tr('Minimum pole size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=2500))
         self.addParameter(QgsProcessingParameterNumber('Maxaggregationsize', self.tr('Max aggregation size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=50000))
@@ -76,6 +77,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         continu=self.parameterAsBool(parameters,'Neighbourhood',context)
         secondaire=self.parameterAsBool(parameters,'Secondary',context)
         separateur=self.parameterAsString(parameters,'Separator',context)
+        dec=self.parameterAsString(parameters,'Dec',context)
         filtre=self.parameterAsString(parameters,'Filter',context)
         
         fields = QgsFields()
@@ -121,7 +123,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         feedback.setProgressText(self.tr("Importing data..."))
         feedback.setCurrentStep(3)
 
-        a=self.import_migrations(donnees,origine,destination,valeur,separateur,str(filtre))
+        a=self.import_migrations(donnees,origine,destination,valeur,separateur,dec,str(filtre))
         #a=filtre_migrations(a,['09','11','12','30','31','32','34','46','48','65','66','81','82'])
         #a=filtre_migrations(a,['02','59','60','62','80'])
         #a=filtre_migrations(a,['08','10','51','52','54','55','57','67','68','88'])
@@ -178,13 +180,16 @@ class MobilityAreas(QgsProcessingAlgorithm):
             try:
                 resultat.write(";".join([str(i) for i in [n,commune,pole,lmax['LIEN'],pct_value,total.iat[0,0],'\n']]))
             except:
-                resultat.write(";".join([str(i) for i in [n,commune,pole,lmax['LIEN'],0,total.iat[0,0],'\n']]))
+                resultat.write(";".join([str(i) for i in [n,commune,pole,lmax['LIEN'],0,0,'\n']]))
             
             feat=QgsFeature()
             if commune not in poles:
                 feat.setAttributes([n,str(commune),str(pole),"",dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
             else:
-                feat.setAttributes([n,str(commune),str(pole),str(dic_geo[commune][1]),dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
+                try:
+                    feat.setAttributes([n,str(commune),str(pole),str(dic_geo[commune][1]),dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
+                except:
+                    print(commune)
                 
             feat.setGeometry(dic_geo[commune][2])
             #print(";".join([str(i) for i in [n,str(commune),str(pole),dic_geo[commune][2],dic_geo[commune][2].addSecs(n),lmax['LIEN'],pct.iat[0,0],total.iat[0,0]]]))
@@ -197,7 +202,10 @@ class MobilityAreas(QgsProcessingAlgorithm):
                 poles.add(pole)
                 feedback.setProgressText(str(pole)+":" +dic_geo[pole][1])
             else:
-                feat2.setAttributes([n,str(pole),str(pole),str(dic_geo[pole][1]),dic_geo[pole][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
+                try:
+                    feat2.setAttributes([n,str(pole),str(pole),str(dic_geo[pole][1]),dic_geo[pole][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
+                except:
+                    print(pole)
 
             feat2.setGeometry(dic_geo[pole][2])
             #print(";".join([str(i) for i in [n,str(commune),str(pole),dic_geo[pole][2],QDateTime(2021,1,1,0,0).addSecs(n),lmax['LIEN'],pct.iat[0,0],total.iat[0,0]]] ))
@@ -209,6 +217,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
             try:
                 del(dic_geo[pole])
             except:
+                print(pole)
                 break
 
             #feat3=QgsFeature()
@@ -247,8 +256,8 @@ class MobilityAreas(QgsProcessingAlgorithm):
         
         return {'output': dest_id}
         
-    def import_migrations(self, input='G:/insee/RP2017_MOBPRO/FD_MOBPRO_2017.csv',o='COMMUNE',d='DCLT',valeur='IPONDI',separateur=';',filtre=''):
-        a=pandas.read_csv(input,';',delimiter=separateur, dtype={o:str, d: str}, decimal='.')
+    def import_migrations(self, input='G:/insee/RP2017_MOBPRO/FD_MOBPRO_2017.csv',o='COMMUNE',d='DCLT',valeur='IPONDI',separateur=';',dec='.',filtre=''):
+        a=pandas.read_csv(input,';',delimiter=separateur, dtype={o:str, d: str}, decimal=dec)
         if not(filtre==''):
             a=a.query(filtre)
         

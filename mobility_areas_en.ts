@@ -1,96 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="en" sourcelanguage="en">
+<!DOCTYPE TS><TS version="2.0">
 <context>
     <name>MobilityAreas</name>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="44"/>
-        <source>Zones</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="MobilityAreas_algorithm.py" line="45"/>
-        <source>Zone Id</source>
-        <translation></translation>
+        <source>Zones</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="46"/>
-        <source>Zone label</source>
-        <translation></translation>
+        <source>Zone Id</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="47"/>
-        <source>Origin/Destination file</source>
+        <source>Zone label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="48"/>
-        <source>Origin</source>
+        <source>Origin/Destination file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="49"/>
-        <source>Destination</source>
+        <source>Origin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="50"/>
-        <source>Value</source>
+        <source>Destination</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="51"/>
-        <source>Field separator</source>
+        <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="52"/>
-        <source>Minimum pole size</source>
+        <source>Field separator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="53"/>
-        <source>Max aggregation size</source>
+        <source>Decimal separator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="54"/>
-        <source>Maximum link</source>
+        <source>Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="55"/>
-        <source>Output</source>
-        <translation></translation>
+        <source>Minimum pole size</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="94"/>
+        <location filename="MobilityAreas_algorithm.py" line="56"/>
+        <source>Max aggregation size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="57"/>
+        <source>Maximum link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="58"/>
+        <source>Neighbourhood constraint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="59"/>
+        <source>Secondary poles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="60"/>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="103"/>
         <source>step;zone;pole;link;internal;total
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="101"/>
+        <location filename="MobilityAreas_algorithm.py" line="110"/>
         <source>Generating neighbourhood table...</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="MobilityAreas_algorithm.py" line="105"/>
-        <source>Generating zones data...</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="MobilityAreas_algorithm.py" line="114"/>
+        <source>Generating zones data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="123"/>
         <source>Importing data...</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="141"/>
+        <location filename="MobilityAreas_algorithm.py" line="150"/>
         <source>Building cluster areas...</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="451"/>
+        <location filename="MobilityAreas_algorithm.py" line="458"/>
+        <source>Mobility Areas</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="481"/>
         <source>
         Algorithm to build incrementally mobility cluster areas based on OD trips data between zones. 
         It aggregates successively zones that have the strongest link until it remains only one area
@@ -110,9 +134,12 @@
             Destination: name of the destination column
             Value: Name of the value column
             Field separator: Field separator . &apos;;&apos; by default
+            Filter: OD trips data filter in pandas syntax
             Minimum pole size&#xa0;: the minimum size for becoming a pole
             Max agregation size: The maximum size to be able to be agregated
             Maximum link: A stop criteria on the maximum link (0.01 = 1% of the trips are going to the pole area)
+            Neighbourhood constraint: if true a zone can be agregated only if it intersects the pole area (that implies no island in pole areas)
+            Secondary poles: If checkes, secondary poles, that could be masqued by main poles, may appear
             Ouput: The polygon layer result table (contains resultst from each step of the algorithm for further dynamic analysis with temporal manager)
             
         </source>
@@ -122,9 +149,9 @@
 <context>
     <name>MobilityAreasProvider</name>
     <message>
-        <location filename="MobilityAreas_provider.py" line="78"/>
-        <source>MobilityAreas</source>
-        <translation></translation>
+        <location filename="MobilityAreas_provider.py" line="101"/>
+        <source>Cerema</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

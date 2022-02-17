@@ -44,48 +44,48 @@
         <translation>Séparateur de champ</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="54"/>
+        <location filename="MobilityAreas_algorithm.py" line="55"/>
         <source>Minimum pole size</source>
         <translation>Taille minimale des pôles</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="55"/>
+        <location filename="MobilityAreas_algorithm.py" line="56"/>
         <source>Max aggregation size</source>
         <translation>Taille maximale des pôles pour agrégation</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="56"/>
+        <location filename="MobilityAreas_algorithm.py" line="57"/>
         <source>Maximum link</source>
         <translation>Lien maximum pour agrégation</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="59"/>
+        <location filename="MobilityAreas_algorithm.py" line="60"/>
         <source>Output</source>
         <translation>Résultat</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="101"/>
+        <location filename="MobilityAreas_algorithm.py" line="103"/>
         <source>step;zone;pole;link;internal;total
 </source>
         <translation>etape;zone;pole;lien;interne;total</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="108"/>
+        <location filename="MobilityAreas_algorithm.py" line="110"/>
         <source>Generating neighbourhood table...</source>
         <translation>Génération de la table de voisinage...</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="112"/>
+        <location filename="MobilityAreas_algorithm.py" line="114"/>
         <source>Generating zones data...</source>
         <translation>Génération des données de zones...</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="121"/>
+        <location filename="MobilityAreas_algorithm.py" line="123"/>
         <source>Importing data...</source>
         <translation>Import des données...</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="148"/>
+        <location filename="MobilityAreas_algorithm.py" line="150"/>
         <source>Building cluster areas...</source>
         <translation>Elaboration des bassins de mobilité...</translation>
     </message>
@@ -144,12 +144,12 @@
         </translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="449"/>
+        <location filename="MobilityAreas_algorithm.py" line="458"/>
         <source>Mobility Areas</source>
         <translation>Bassins de mobilité</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="57"/>
+        <location filename="MobilityAreas_algorithm.py" line="58"/>
         <source>Neighbourhood constraint</source>
         <translation>Contrainte de voisinage</translation>
     </message>
@@ -212,17 +212,17 @@
         </translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="58"/>
+        <location filename="MobilityAreas_algorithm.py" line="59"/>
         <source>Secondary poles</source>
         <translation>Pôles secondaires</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="53"/>
+        <location filename="MobilityAreas_algorithm.py" line="54"/>
         <source>Filter</source>
         <translation>Filtre</translation>
     </message>
     <message>
-        <location filename="MobilityAreas_algorithm.py" line="472"/>
+        <location filename="MobilityAreas_algorithm.py" line="481"/>
         <source>
         Algorithm to build incrementally mobility cluster areas based on OD trips data between zones. 
         It aggregates successively zones that have the strongest link until it remains only one area
@@ -280,6 +280,11 @@
             Résultat: La table de polygones résultat (contient les résultats de chaque étape de l&apos;algorithme pour une analyse future avec la manageur temporel de QGis)
             
         </translation>
+    </message>
+    <message>
+        <location filename="MobilityAreas_algorithm.py" line="53"/>
+        <source>Decimal separator</source>
+        <translation>Séparateur décimal</translation>
     </message>
 </context>
 <context>
