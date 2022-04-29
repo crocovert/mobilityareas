@@ -57,7 +57,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterNumber('Maximumlink', self.tr('Maximum link'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1, defaultValue=0.01))
         self.addParameter(QgsProcessingParameterBoolean('Neighbourhood', self.tr('Neighbourhood constraint'), defaultValue=False))
         self.addParameter(QgsProcessingParameterBoolean('Secondary', self.tr('Secondary poles'), defaultValue=False))
-        self.addParameter(QgsProcessingParameterFeatureSink('Output', self.tr('Output'), type=QgsProcessing.TypeVectorPolygon, defaultValue=None))
+        self.addParameter(QgsProcessingParameterFeatureSink('Output', self.tr('Output'), type=QgsProcessing.TypeVectorPolygon,createByDefault=False))
 
     def processAlgorithm(self, parameters, context, model_feedback):
         # Use a multi-step feedback, so that individual child algorithm progress reports are adjusted for the
@@ -134,7 +134,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
 
 
 
-        print(a.head())
+        #print(a.head())
         a,marges,marged=self.calcul_marges_interne(a,origine,destination, valeur)
         a=self.maj_migrations(a,origine,destination,valeur)
 
@@ -173,12 +173,15 @@ class MobilityAreas(QgsProcessingAlgorithm):
                 pct_value=0
             total=marged.loc[marged[destination]==pole,['TOTAL_POLE']]
             if pole not in dic_geo:
+                if commune not in dic_geo:
+                    dic_geo[commune]=[commune,commune,QgsGeometry().fromWkt('MULTIPOLYGON EMPTY'),QDateTime(2020,1,1,0,0),QDateTime(2020,1,1,0,0),0,0,0]
                 try:
                     dic_geo[pole]=[pole,pole,dic_geo[commune][2],QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2021,1,1,0,0).addSecs(n),lmax['LIEN'],pct_value,total.iat[0,0]]
                 except:
+                    print(pole,commune)
+                    #print(pct)
+                    #print(dic_geo)
                     dic_geo[pole]=[pole,pole,dic_geo[commune][2],QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2021,1,1,0,0).addSecs(n),lmax['LIEN'],0,total.iat[0,0]]
-                    print(pole)
-                    print(pct)
             try:
                 resultat.write(";".join([str(i) for i in [n,commune,pole,lmax['LIEN'],pct_value,total.iat[0,0],'\n']]))
             except:
@@ -186,7 +189,14 @@ class MobilityAreas(QgsProcessingAlgorithm):
             
             feat=QgsFeature()
             if commune not in poles:
-                feat.setAttributes([n,str(commune),str(pole),"",dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
+                if commune not in dic_geo:
+                    dic_geo[commune]=[commune,commune,QgsGeometry().fromWkt('MULTIPOLYGON EMPTY'),QDateTime(2020,1,1,0,0),QDateTime(2020,1,1,0,0),0,0,0]
+                try:
+                    feat.setAttributes([n,str(commune),str(pole),"",dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
+                except:
+                    print(pole,commune)
+                    feat.setAttributes([n,str(commune),str(pole),"",dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
+                    break
             else:
                 try:
                     feat.setAttributes([n,str(commune),str(pole),str(dic_geo[commune][1]),dic_geo[commune][3],QDateTime(2020,1,1,0,0).addSecs(n),float(lmax['LIEN']),float(pct_value),float(total.iat[0,0]),float(lmax['FLUX'])])
@@ -242,7 +252,8 @@ class MobilityAreas(QgsProcessingAlgorithm):
                 #print(";".join([str(i) for i in [n,str(commune),str(pole),QDateTime(2020,1,1,0,0).addSecs(n),QDateTime(2021,1,1,0,0).addSecs(n),lmax['LIEN'],pct.iat[0,0],total.iat[0,0]]] ))
                 table_resultat.addFeature(feat3)
             
-        resultat.close()    
+        resultat.close()
+        del(table_resultat)
         self.sortie_bassins(bassins,nom_txt[0]+'_bassins.txt')
         del(a)
         del(marges)
@@ -256,7 +267,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
 
         
         
-        return {'output': dest_id}
+        return {'Output': dest_id}
         
     def import_migrations(self, input='G:/insee/RP2017_MOBPRO/FD_MOBPRO_2017.csv',o='COMMUNE',d='DCLT',valeur='IPONDI',separateur=';',dec='.',filtre=''):
         a=pandas.read_csv(input,';',delimiter=separateur, dtype={o:str, d: str}, decimal=dec)
@@ -342,7 +353,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
             texte="(TOTAL_POLE>=" + str(pole_min) +" and TOTAL<=" + str(pole_max)+") and (LIEN>="+str(lien_mini)+" and TOUCHE==1)"
             lien_max=data.query(texte)['LIEN'].idxmax()
             a=data.loc[lien_max]
-            print(a)
+            #print(a)
         except:
             a=pandas.DataFrame({})
         return(a)
@@ -422,8 +433,8 @@ class MobilityAreas(QgsProcessingAlgorithm):
         result_geo={}
         for f in features:
 
-            num=f[code]
-            name=f[nom]
+            num=str(f[code])
+            name=str(f[nom])
             geom=f.geometry()
             date_debut=QDateTime(2020,1,1,0,0)
             date_fin=QDateTime(2021,1,1,0,0)
