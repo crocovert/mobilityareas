@@ -6,7 +6,7 @@
 name=Mobility Areas
 qgisMinimumVersion=3.0
 description=This plugin build dynamic mobility areas based on origin destination data
-version=1.0
+version=1.2.0
 author=Patrick Palmier
 email=patrick.palmier@cerema.fr
 
@@ -20,7 +20,9 @@ repository=https://github.com/crocovert/mobilityareas
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog= 1.0 fix bugs, annoying error messages and convert zone id in text (if not)
+changelog= 1.2.0 add script to generate sas labels
+		1.1.0 add a max autonomy rate criterion
+		1.0 fix bugs, annoying error messages and convert zone id in text (if not)
 		0.3 add control for decimal separator & fix bugs
 		0.2 Add data source filter and bug fixes
 		0.1 First version

@@ -55,6 +55,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterNumber('Minimumpoolsize', self.tr('Minimum pole size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=2500))
         self.addParameter(QgsProcessingParameterNumber('Maxaggregationsize', self.tr('Max aggregation size'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1.79769e+308, defaultValue=50000))
         self.addParameter(QgsProcessingParameterNumber('Maximumlink', self.tr('Maximum link'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1, defaultValue=0.01))
+        self.addParameter(QgsProcessingParameterNumber('Pctmax', self.tr('Max autonomy rate'), type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1, defaultValue=0.90))
         self.addParameter(QgsProcessingParameterBoolean('Neighbourhood', self.tr('Neighbourhood constraint'), defaultValue=False))
         self.addParameter(QgsProcessingParameterBoolean('Secondary', self.tr('Secondary poles'), defaultValue=False))
         self.addParameter(QgsProcessingParameterFeatureSink('Output', self.tr('Output'), type=QgsProcessing.TypeVectorPolygon,createByDefault=False))
@@ -74,6 +75,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         min_size=self.parameterAsDouble(parameters,'Minimumpoolsize',context)
         max_size=self.parameterAsDouble(parameters,'Maxaggregationsize',context)
         max_link=self.parameterAsDouble(parameters,'Maximumlink',context)
+        pct_max=self.parameterAsDouble(parameters,'Pctmax',context)
         continu=self.parameterAsBool(parameters,'Neighbourhood',context)
         secondaire=self.parameterAsBool(parameters,'Secondary',context)
         separateur=self.parameterAsString(parameters,'Separator',context)
@@ -146,7 +148,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
         a=self.calcul_lien(a,marges,marged,origine,destination,valeur)
 
 
-        lmax=self.cherche_lien_max(a,pole_min,pole_max,lien_mini)
+        lmax=self.cherche_lien_max(a,pole_min,pole_max,lien_mini,pct_max)
 
 
         feedback.setProgressText(self.tr("Building cluster areas..."))
@@ -241,7 +243,7 @@ class MobilityAreas(QgsProcessingAlgorithm):
             #writer.addFeature(feat3)
 
             a=self.calcul_lien(a,marges,marged,origine,destination, valeur)
-            lmax=self.cherche_lien_max(a,pole_min,pole_max,lien_mini)
+            lmax=self.cherche_lien_max(a,pole_min,pole_max,lien_mini,pct_max)
             n+=1
 
         for i in dic_geo:
@@ -347,10 +349,10 @@ class MobilityAreas(QgsProcessingAlgorithm):
         data=data.drop(['INTERNE','TOTAL'])
         return(data)
         
-    def cherche_lien_max(self, data,pole_min,pole_max,lien_mini):
+    def cherche_lien_max(self, data,pole_min,pole_max,lien_mini,pct_max):
         try:
             #lien_max=data.loc[(data['TOTAL_POLE']>=pole_min) & ((data['TOTAL']<=pole_max) | (data['POLE']==0)) & (data['LIEN']>=lien_mini) & (data['TOUCHE']==1),'LIEN'].idxmax()
-            texte="(TOTAL_POLE>=" + str(pole_min) +" and TOTAL<=" + str(pole_max)+") and (LIEN>="+str(lien_mini)+" and TOUCHE==1)"
+            texte="(TOTAL_POLE>=" + str(pole_min) +" and TOTAL<=" + str(pole_max)+") and (LIEN>="+str(lien_mini)+" and TOUCHE==1) and PCT<"+ str(pct_max)
             lien_max=data.query(texte)['LIEN'].idxmax()
             a=data.loc[lien_max]
             #print(a)
