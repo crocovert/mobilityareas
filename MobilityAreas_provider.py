@@ -38,6 +38,7 @@ from processing.core.Processing import Processing
 from processing.core.ProcessingConfig import ProcessingConfig, Setting
 from qgis.core import QgsProcessingProvider
 from .MobilityAreas_algorithm import MobilityAreas
+from .Lexem import Lexem
 from qgis.PyQt.QtGui import QIcon
 
 pluginPath = os.path.dirname(__file__)
@@ -62,6 +63,7 @@ class MobilityAreasProvider(QgsProcessingProvider):
         Loads all algorithms belonging to this provider.
         """
         self.addAlgorithm(MobilityAreas())
+        self.addAlgorithm(Lexem())
         # add additional algorithms here
         # self.addAlgorithm(MyOtherAlgorithm())
         self.plugin_dir = os.path.dirname(__file__)
